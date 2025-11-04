@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: spring
+      POSTGRES_USER: spring
+      POSTGRES_PASSWORD: spring
+    container_name: db_hibernet
+    ports:
+      - "5432:5432"
+
+  front:
+    build:
+      context: ./front
+    container_name: front
+    hostname: front
+    ports:
+      - "8080:8080"
+
+  backend:
+    build:
+      context: ./
+    container_name: backend
+    hostname: backend
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/spring
+    depends_on:
+      - db
+      - front
+
