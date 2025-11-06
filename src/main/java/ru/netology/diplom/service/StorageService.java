@@ -26,16 +26,13 @@ import java.nio.file.StandardCopyOption;
 public class StorageService {
     private final Path rootLocation;
     private final StorageRepository storageRepository;
-    private final UserRepository userRepository;
     private final ActiveTokenRepository activeTokenRepository;
 
     public StorageService(StorageProperties properties,
                           StorageRepository storageRepository,
-                          UserRepository userRepository,
                           ActiveTokenRepository activeTokenRepository) {
         this.rootLocation = Paths.get(properties.getRootLocation());
         this.storageRepository = storageRepository;
-        this.userRepository = userRepository;
         this.activeTokenRepository = activeTokenRepository;
     }
 
