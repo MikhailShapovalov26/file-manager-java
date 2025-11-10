@@ -1,5 +1,13 @@
 package ru.netology.diplom.service;
 
+import io.minio.ListObjectsArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.Result;
+import io.minio.errors.*;
+import io.minio.messages.Item;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,9 +18,9 @@ import ru.netology.diplom.model.Storage;
 import ru.netology.diplom.model.User;
 import ru.netology.diplom.repostory.ActiveTokenRepository;
 import ru.netology.diplom.repostory.StorageRepository;
-import ru.netology.diplom.repostory.UserRepository;
 import ru.netology.diplom.storage.StorageProperties;
 
+import javax.management.modelmbean.XMLParseException;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,10 +29,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class StorageService {
     private final Path rootLocation;
+
     private final StorageRepository storageRepository;
     private final ActiveTokenRepository activeTokenRepository;
 
@@ -35,6 +49,7 @@ public class StorageService {
         this.storageRepository = storageRepository;
         this.activeTokenRepository = activeTokenRepository;
     }
+
 
 
     public void save(MultipartFile file, String token) throws DocumentStorageException {
@@ -105,7 +120,7 @@ public class StorageService {
     // Поиск, что юзер активировал сессию
     private User searchUserActiveSession(String token) {
         User user;
-        if(token.startsWith("Bearer ")) {
+        if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
         if (activeTokenRepository.existsById(token)) {
